@@ -1,0 +1,6 @@
+insert into car_availability_periods(St_Date,End_Date) values(2016-08-01,2016-08-15);
+insert into car_availability_periods(St_Date,End_Date) values(2016-08-16,2016-08-31);
+insert into car_availability_periods(St_Date,End_Date) values(2016-09-01,2016-09-15);
+insert into car_availability_periods(St_Date,End_Date) values(2016-09-16,2016-09-30);
+insert into car_availability_periods(St_Date,End_Date) values(2016-10-01,2016-10-15);
+insert into car_availability_periods(St_Date,End_Date) values(2016-10-16,2016-10-31);

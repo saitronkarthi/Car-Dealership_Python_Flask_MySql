@@ -1,0 +1,63 @@
+1. Fetch All customer Details:
+------------------------------- 
+select Customer_Name as 'Customer Name', Customer_DLNo as 'Driving License', Phone from
+  customer;
+
+2. Fetch all Car Details:
+--------------------------
+ 
+  select LicensePlate_No as 'License Plate Number', Model as 'Car Model',
+  Year, Car_Type as 'Car Type',Daily_Rate as 'Daily Rate', Weekly_Rate as 'Weekly Rate'
+  from car;
+
+3.Fetch all the car and customer details given for rental:
+------------------------------------------------------------
+
+select cr.Customer_Name,cr.Customer_DLNo, c.Car_Type as CarType,c.LicensePlate_No,
+	'Daily' as RentalType,
+	
+D_StDate as StartDate,concat(D_NoofDays,' ','days') as Period,
+	D_RtDate as ReturnDate,concat('$',D_AmtDue) as AmtDue
+
+from rentals r, customer cr, car c
+	where r.R_Vehicle_Id=c.Vehicle_Id and
+	r.R_Customer_Id=cr.Customer_Id and
+	r.Daily_Flag='Y'
+ 
+   
+	union
+	   
+select cr.Customer_Name,cr.Customer_DLNo, c.Car_Type as CarType,c.LicensePlate_No,
+	'Weekly' as RentalType,
+	W_StDate as StartDate,concat(W_NoofWeeks,' ','weeks') as Period,
+	W_RtDate as ReturnDate,concat('$',W_AmtDue) as AmtDue
+	from rentals r, customer cr, car c
+ where r.R_Vehicle_Id=c.Vehicle_Id and
+	r.R_Customer_Id=cr.Customer_Id and
+	r.Weekly_Flag='Y'
+    order by Customer_Name;
+
+
+4. Fetch all the car details for the returned rentals:
+------------------------------------------------------
+  select cr.Customer_Name,cr.Customer_DLNo, c.Car_Type as CarType,c.LicensePlate_No,
+	'Daily' as RentalType,
+
+  D_StDate as StartDate,concat(D_NoofDays,' ','days') as Period,
+	D_RtDate as ReturnDate,concat('$',D_AmtDue) as AmtDue
+
+ from rentalshistory r, customer cr, car c
+	where r.R_Vehicle_Id=c.Vehicle_Id and
+	r.R_Customer_Id=cr.Customer_Id and
+	r.Daily_Flag='Y'
+
+	union
+	
+   select cr.Customer_Name,cr.Customer_DLNo, c.Car_Type as CarType,c.LicensePlate_No,
+	'Weekly' as RentalType,
+	W_StDate as StartDate,concat(W_NoofWeeks,' ','weeks') as Period,
+	W_RtDate as ReturnDate,concat('$',W_AmtDue) as AmtDue
+	from rentalshistory r, customer cr, car c
+	where r.R_Vehicle_Id=c.Vehicle_Id and
+	r.R_Customer_Id=cr.Customer_Id and
+	r.Weekly_Flag='Y' order by Customer_Name;

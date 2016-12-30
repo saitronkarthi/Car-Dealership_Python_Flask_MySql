@@ -1,0 +1,5 @@
+select * from car;
+
+select * from car_availability;
+
+select * from customer;

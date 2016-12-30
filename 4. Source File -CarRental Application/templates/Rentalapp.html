@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rentals Application</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'css/bootstrap.min.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'css/simple-sidebar.css') }}">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="static/js/jquery.js"></script>
+
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+      <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+      <script>
+  $( function() {
+
+      $( "#datepicker" ).datepicker({ minDate: -12, maxDate: "+3M" });
+      $( "#datepicker" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+      $( "#datepickerst" ).datepicker({ minDate: -12, maxDate: "+3M" });
+      $( "#datepickerst" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+      $( "#datepickerend" ).datepicker({ minDate: -12, maxDate: "+3M" });
+      $( "#datepickerend" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+  } );
+  </script>
+    <script type="text/javascript">
+
+
+        function ConfirmRentals() {
+            var cid=$('#custname').val();
+            var vid=document.getElementById("lblvid").innerText;
+            var rtyp=document.getElementById("lblrt").innerText;
+            var stdate=document.getElementById("lblstdate").innerText;
+            var dw=document.getElementById("lbldaysweeks").innerText;
+            var dwno=dw.slice(0, -4);
+            var datar = { "vehid": vid, "custid":cid , "rtype": rtyp,"startdate":stdate,"dayweek":dwno };
+
+              $.ajax({
+                type: "POST",
+                url: "/rentals", contentType: 'application/json;charset=UTF-8',
+                data:  JSON.stringify(datar),
+                success: function (data) {
+                    alert("Rental Details Saved Successfully");
+
+                    location.reload();
+                                    }
+
+            });
+
+
+        }
+         function getCustVal(sel) {
+                    var value = sel.value;
+
+
+                }
+
+        function getComboVal(sel) {
+            var value = sel.value;
+            if(value=="D") {
+                document.getElementById("ddays").style.display = "block";
+                document.getElementById("dweeks").style.display = "none";
+            }
+            else {
+                 document.getElementById("ddays").style.display = "none";
+                document.getElementById("dweeks").style.display = "block";
+            }
+
+        }
+
+        function RentCardet(cid,lp,ct,rt,model,year,rate,stdate,dw) {
+
+           document.getElementById("ConfRental").style.display = "block";
+            document.getElementById("lblvid").innerHTML=cid;
+           document.getElementById("lbllicense").innerHTML=lp;
+            document.getElementById("lblct").innerHTML=ct;
+            document.getElementById("lblrt").innerHTML=rt;
+            document.getElementById("lblmodel").innerHTML=model;
+            document.getElementById("lblyear").innerHTML=year;
+            document.getElementById("lblrate").innerHTML='$'+rate;
+            var dwno=dw.slice(0, -4);
+            var amtdue=rate*dwno;
+           var dorw = dw.substr(dw.length - 4);
+            if(dorw=="days")
+            {
+                   var tt = stdate;
+                var date = new Date(tt);
+                var newdate = new Date(date);
+                newdate.setDate(newdate.getDate() + parseInt(dwno));
+                var dd = newdate.getDate();
+                var mm = newdate.getMonth() + 1;
+                var y = newdate.getFullYear();
+                var someFormattedDate = y + '-' + mm + '-' + dd;
+                 document.getElementById('lblrtdate').innerHTML = someFormattedDate;
+
+            }
+            else
+            {
+                 var tt = stdate;
+                var date = new Date(tt);
+                var newdate = new Date(date);
+                var a=parseInt(dwno);
+                var b=parseInt(a)*7;
+                newdate.setDate(newdate.getDate() + (parseInt(b)));
+                var dd = newdate.getDate();
+                var mm = newdate.getMonth() + 1;
+                var y = newdate.getFullYear();
+                var someFormattedDate = y + '-' + mm + '-' + dd;
+                 document.getElementById('lblrtdate').innerHTML = someFormattedDate;
+
+            }
+
+            document.getElementById("lblstdate").innerHTML=stdate;
+            document.getElementById("lbldaysweeks").innerHTML=dw;
+            document.getElementById("lblamtdue").innerHTML='$'+amtdue;
+
+        }
+
+
+     function LoadCustomerdet(cid) {
+            $.ajax({
+                type: "POST",
+                url: "/showCustomer/" + cid,
+                data: {cid: cid},
+                success: function (data) {
+                    var a = data.split(',');
+                    $("#txtCustomerId").val(a[0]);
+                    $("#txtCustomerName").val(a[1]);
+                    $("#txtCustomerDLNo").val(a[2]);
+                    $("#txtPhone").val(a[3]);
+                                    }
+
+            });
+            $("#lblCustomerMsg").hide();
+
+        }
+        function LoadCardet(carid) {
+
+            $.ajax({
+                type: "POST",
+                url: "/showCar/" + carid,
+                data: {carid: carid},
+                success: function (data) {
+                    var a = data.split(',');
+                    $("#txtVehicleId").val(a[0]);
+                    $("#txtLicensePlateNo").val(a[1]);
+                    $("#txtModel").val(a[2]);
+                    $("#txtYear").val(a[3]);
+                    $("#txtDailyRate").val(a[4]);
+                    $("#txtWeeklyRate").val(a[5]);
+                    $("#cartype").val(a[6]);
+                                    }
+
+            });
+            $("#lblCarMsg").hide();
+
+        }
+    </script>
+
+</head>
+<body>
+<div style="background-color: #9acfea;width:100%;height:60px;">
+    <table style="width: 100%">
+        <tr>
+            <td style="width: 40%">
+                <h4 style="color: #23527c;margin-top:15px;margin-left: 20px;"> DB1 Project2 - Car Rentals Application </h4>
+            </td>
+            <td style="width: 50%;color: #23527c;margin-top:15px;"><h4>Karthikeyan Rajamani   1001267157 and Vineel Krishna Vellanki  1001228753
+</h4></td>
+        </tr>
+    </table>
+</div>
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+
+            <li>
+                <label style="color:white;margin-left :0px;">CarRental - Menu</label>
+            </li>
+            <li style="background-color: lightgray;">
+                <b>Master</b>
+            </li>
+            <li>
+
+                <a href="/showCustomer/0">Customer</a>
+
+            </li>
+            <li>
+                <a href="/showCar/0">Car</a>
+            </li>
+
+
+            <li style="background-color: lightgrey;">
+                <b>Transaction</b>
+            </li>
+            <li>
+                <a href="/GetRental">Get Rental</a>
+            </li>
+            <li>
+                <a href="/ReturnRentals/0,0">Return Rental</a>
+            </li>
+            <li style="background-color: lightgrey;">
+                <b> Reports</b>
+            </li>
+             <li>
+                <a href="/showAllRentals/0,0">All Returned Rentals</a>
+            </li>
+            <li>
+                <a href="/showAllAvailRentals">All Available Cars</a>
+            </li>
+
+
+        </ul>
+    </div>
+        <div id="page-content-wrapper">
+        <input type="hidden" value="0" id="hdncustid" name="hdncustid">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                      <form action="/customer" method="post">
+                        <div id="divCustomer" style="margin-left: 270px;display:{{ custdis }} ;width:40%;">
+                            <table style="width:98%">
+                                <tr>
+                                    <td>
+                                        <h4 style="color: #23527c;margin-top:15px;"> Master >> Customer</h4>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:30%;display:none;">
+                                        <input type="text" name="txtCustomerId" class="form-control" id="txtCustomerId"
+                                               placeholder="Customer Id" value="0" required></td>
+
+                                </tr>
+                                <tr>
+                                    <td style="width:30%">
+                                        <input type="text" name="txtCustomerName" class="form-control" id="txtCustomerName"
+                                               placeholder="Customer Name" required autofocus></td>
+
+                                </tr>
+                                <tr>
+                                    <td style="width:30%">
+
+                                        <input type="text" name="txtCustomerDLNo" class="form-control" id="txtCustomerDLNo"
+                                               placeholder="Driving License No" required>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="width:30%">
+                                        <input type="text" name="txtPhone" class="form-control"
+                                               id="txtPhone" placeholder="Customer Phone" ></td>
+
+                                </tr>
+
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td style="width:30%;text-align: center;">
+                                        <button class="btn btn-lg btn-primary btn-block" type="submit"
+                                                style="width:20%;">Submit
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:30%;text-align: left;display:{{ lcustdis }};"><label
+                                            id="lblCustomerMsg">Customer saved successfully</label></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </form>
+                    <br/>
+                    <div id="LoadCustomer" style="margin-left: 270px;display:{{ custdis }} ;width:70%;">
+                        <table id="CustLoad" class="table table-bordered">
+                            <tr>
+
+                                <th>Customer Name</th>
+                                <th>Customer Driving License No</th>
+                                <th>Customer Phone</th>
+
+                                <th>Edit</th>
+                            </tr>
+
+                            {% for customer in Customers %}
+                                <tr>
+                                    <td style="display:none;">{{ customer[0] }}</td>
+                                    <td>{{ customer[1] }}</td>
+                                    <td>{{ customer[2] }}</td>
+                                    <td>{{ customer[3] }}</td>
+
+                                    <td><a href="#"
+                                           onclick=LoadCustomerdet("{{ customer[0] }}")>
+                                        Edit</a></td>
+                                </tr>
+                            {% endfor %}
+
+
+                        </table>
+                    </div>
+                    <form action="/car" method="post">
+                        <div id="divCar" style="margin-left: 270px;display:{{ cardis }} ;width:40%;">
+                            <table style="width:98%">
+                                <tr>
+                                    <td>
+                                        <h4 style="color: #23527c;margin-top:15px;"> Master >> Car</h4>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:30%;display:none;">
+                                        <input type="text" name="txtVehicleId" class="form-control" id="txtVehicleId"
+                                               placeholder="Vehicle Id" value="0" required></td>
+
+                                </tr>
+                                <tr>
+                                    <td style="width:30%">
+                                        <input type="text" name="txtLicensePlateNo" class="form-control" id="txtLicensePlateNo"
+                                               placeholder="License Plate No" required autofocus></td>
+
+                                </tr>
+                                <tr>
+                                    <td style="width:30%">
+
+                                        <input type="text" name="txtModel" class="form-control" id="txtModel"
+                                               placeholder="Model" required>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="width:30%">
+
+                                     <input type="text" name="txtYear" class="form-control"  id="txtYear" placeholder="Year" style="width:200px;"  required /></td>
+
+
+                                </tr>
+                                <tr>
+                                    <td style="width:20%">
+                                        <input type="text" name="txtDailyRate" class="form-control"
+                                               id="txtDailyRate" placeholder="Daily Rate in ($)" style="width:200px;" required ></td>
+
+                                </tr>
+                                      <tr>
+                                    <td style="width:20%">
+                                        <input type="text" name="txtWeeklyRate" class="form-control"
+                                               id="txtWeeklyRate" placeholder="Weekly Rate in ($)" style="width:200px;" required ></td>
+
+                                </tr>
+                                 <tr>
+                                    <td style="width:60%" class="form-control" >
+                                        Car Type <select name="cartype" id="cartype" style="width:200px;" >
+                                      <option value="COMPACT" selected>COMPACT</option>
+                                      <option value="MEDIUM">MEDIUM</option>
+                                      <option value="LARGE">LARGE</option>
+                                      <option value="SUV">SUV</option>
+                                      <option value="TRUCK">TRUCK</option>
+                                      <option value="VAN">VAN</option>
+
+                                 </select>
+
+                                </tr>
+
+
+
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td style="width:30%;text-align: center;">
+                                        <button class="btn btn-lg btn-primary btn-block" type="submit"
+                                                style="width:20%;">Submit
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:30%;text-align: left;display:{{ lcardis }};"><label
+                                            id="lblCarMsg">Vehicle details saved successfully</label></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </form>
+                    <br/>
+                    <div id="LoadCar" style="margin-left: 270px;display:{{ cardis }} ;width:70%;">
+                        <table id="" class="table table-bordered">
+                            <tr>
+
+                                <th>LicensePlate No</th>
+                                <th>Model</th>
+                                <th>Year</th>
+                                <th>Daily Rate($)</th>
+                                <th>Weekly Rate($)</th>
+                                <th>Car Type</th>
+                                <th>Edit</th>
+                            </tr>
+
+                            {% for car in Cars %}
+                                <tr>
+                                    <td style="display:none;">{{ car[0] }}</td>
+                                    <td>{{ car[1] }}</td>
+                                    <td>{{ car[2] }}</td>
+                                    <td>{{ car[3] }}</td>
+                                     <td>{{ car[4] }}</td>
+                                     <td>{{ car[5] }}</td>
+                                     <td>{{ car[6] }}</td>
+                                    <td><a href="#"
+                                           onclick=LoadCardet("{{ car[0] }}")>
+                                        Edit</a></td>
+                                </tr>
+                            {% endfor %}
+
+
+                        </table>
+                    </div>
+                    <form action="/showAvailableCars" method="post">
+                        <div id="divRentals" style="margin-left: 270px;display:{{ rentdis }} ;width:40%;">
+                            <table style="width:98%">
+                                <tr>
+                                    <td>
+                                        <h4 style="color: #23527c;margin-top:2px;"> Transactions >> Get Rental</h4>
+                                    </td>
+                                </tr>
+                                  <tr>
+                                    <td style="width:90%" >
+                                     <input type="text" name="txtLocation" class="form-control"   id="txtLocation" style="width:457px;" placeholder="Rental Location : Arlington"  readonly="true" /></td>
+
+
+                                </tr>
+
+                                    <tr>
+
+                                    <td style="width:70%" class="form-control"  >
+                                        Car Type <select name="acartype" id="acartype" style="width:255px;" >
+                                      <option value="COMPACT" selected>COMPACT</option>
+                                      <option value="MEDIUM">MEDIUM</option>
+                                      <option value="LARGE">LARGE</option>
+                                      <option value="SUV">SUV</option>
+                                      <option value="TRUCK">TRUCK</option>
+                                      <option value="VAN">VAN</option>
+                                        </select>
+                                </tr>
+                                 <tr>
+                                    <td style="width:70%"  class="form-control" >
+                                        Rental Type <select name="renttype" id="renttype" style="width:240px;" onchange="getComboVal(this)" >
+                                      <option value="D" selected>Daily</option>
+                                      <option value="W">Weekly</option>
+
+                                 </select>
+
+                                </tr>
+                                <tr>
+                                    <td style="width:70%" class="form-control">
+
+                                        Start Date <input type="text" id="datepicker" name="datepicker" style="width: 150px;">
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="width:70%" ><div id="ddays">
+                                     <input type="text" name="txtNoofDays" class="form-control"  id="txtNoofDays" placeholder="No of Days" style="width:250px;"  /></div></td>
+
+
+                                </tr>
+                               <tr>
+                                    <td style="width:50%" ><div id="dweeks" style="display:none;">
+                                     <input type="text" name="txtNoofWeeks" class="form-control"   id="txtNoofWeeks" placeholder="No of Weeks" style="width:200px;"  /></div></td>
+
+
+                                </tr>
+
+                                 <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td style="width:30%;text-align: center;">
+                                        <button class="btn btn-lg btn-primary btn-block" type="submit"
+                                                style="width:40%;">Show Available Cars
+                                        </button>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </div>
+
+                    </form>
+                    <br/>
+                    <div id="ShowAvailcars" style="margin-left: 270px;display:{{ arentdis }} ;width:70%;">
+                        <table id="AvailCars" class="table table-bordered">
+
+                         <tr>
+                                <th>LicensePlate#</th>
+                                <th>Car Type</th>
+                                <th>Rental Type</th>
+                                <th>Model</th>
+                                <th>Year</th>
+                                <th>Rate</th>
+                             <th>Start Date</th>
+                             <th>Rental Period</th>
+                                <th>Rental</th>
+                            </tr>
+
+                            {% for car in AvailCars %}
+                                <tr>
+                                    <td style="display:none;">{{ car[0] }}</td>
+                                    <td>{{ car[1] }}</td>
+                                    <td>{{ car[2] }}</td>
+                                    <td>{{ car[3] }}</td>
+                                     <td>{{ car[4] }}</td>
+                                     <td>{{ car[5] }}</td>
+                                     <td>{{ car[6] }}</td>
+                                     <td>{{ car[7] }}</td>
+                                     <td>{{ car[8] }}</td>
+                                    <td><a href="#"
+                                           onclick=RentCardet("{{ car[0] }}","{{ car[1] }}","{{ car[2] }}","{{ car[3] }}","{{ car[4] }}","{{ car[5] }}","{{ car[6] }}","{{ car[7] }}","{{ car[8] }}")>
+                                        Rent</a></td>
+                                </tr>
+                            {% endfor %}
+
+
+                        </table>
+
+                    </div>
+
+                    <div id="ConfRental" style="margin-left: 260px;margin-top:0px;display:none;padding:0;width:70%;">
+                     <table style="width:80%;margin-top:1px;">
+                     <tr><td><b>Car Rental Details</b></td></tr><tr><td>&nbsp;</td></tr>
+                         <tr>
+                          <td style="width:80%" class="form-control" >
+                                        Customer Name & DLNO <select name="custname" id="custname" style="width:300px;"   >
+                                      {% for cname in Customers %}
+                                               <option value="{{ cname[0] }}" >{{ cname[1] }}</option>
+                                            {% endfor %}
+
+                                 </select>
+                               </tr>
+                     <tr><td style="display: none;">Vehicleid: <label id="lblvid"></label></td></tr><br>
+                     <tr><td>License Plate No: <label id="lbllicense"></label></td></tr><br>
+                     <tr><td>Car Type: <label id="lblct"></label></td></tr><br>
+                       <tr><td>Rental Type: <label id="lblrt"></label></td></tr><br>
+                      <tr><td>Model: <label id="lblmodel"></label></td></tr><br>
+                      <tr><td>Year: <label id="lblyear"></label></td></tr><br>
+                      <tr><td>Rate: <label id="lblrate"></label></td></tr><br>
+                     <tr><td>Start Date: <label id="lblstdate"></label></td></tr><br>
+                     <tr><td>Rental Period: <label id="lbldaysweeks"></label></td></tr><br>
+                     <tr><td>Return Date: <label id="lblrtdate"></label></td></tr><br>
+                     <tr><td>Amount Due: <label id="lblamtdue"></label></td></tr><br>
+                      <tr>
+                                    <td style="width:30%;text-align: center;">
+                                        <button class="btn btn-lg btn-primary btn-block" type="submit"
+                                                style="width:20%;" onclick="ConfirmRentals()">Submit
+                                        </button>
+                                    </td>
+                                </tr>
+
+                     </table>
+                    </div>
+
+                      <div id="ReturnRental" style="margin-left: 270px;display:{{ retrentdis }} ;width:80%;">
+                     <h4 style="color: #23527c;margin-top:2px;"> Transactions >> Return Rental</h4>
+                        <table id="Retrental" class="table table-bordered">
+
+                            <tr>
+
+
+                                <th>Customer Name</th>
+                                <th>Customer DLNo</th>
+                                <th>Car Type</th>
+                                <th>License PlateNo</th>
+                                <th>Rental Type</th>
+                                <th>Start Date</th>
+                                <th>Rented For</th>
+                                <th>Return Date</th>
+                                <th>Amount Due</th>
+                                <th>Return Rental</th>
+
+                            </tr>
+
+                            {% for ret in RetRentals %}
+                                <tr>
+                                    <td style="display:none;">{{ ret[0] }}</td>
+                                     <td style="display:none;">{{ ret[1] }}</td>
+                                    <td>{{ ret[2] }}</td>
+                                    <td>{{ ret[3] }}</td>
+                                    <td>{{ ret[4] }}</td>
+                                    <td>{{ ret[5] }}</td>
+                                     <td>{{ ret[6] }}</td>
+                                    <td>{{ ret[7] }}</td>
+                                    <td>{{ ret[8] }}</td>
+                                    <td>{{ ret[9] }}</td>
+                                     <td>{{ ret[10] }}</td>
+                                <td><a href="/ReturnRentals/{{ ret[0] }},{{ret[1] }}"> Return</a></td>
+
+                                </tr>
+                            {% endfor %}
+
+                        </table>
+                      <h4 style="display:{{ lretrentdis }};"> Vehicle returned successfully</h4>
+                    </div>
+
+
+
+     <div id="AllReturnRental" style="margin-left: 270px;display:{{ allretrentdis }} ;width:80%;">
+                     <h4 style="color: #23527c;margin-top:2px;"> Reports >> All Returned Rentals</h4>
+                        <table id="AllRetrental" class="table table-bordered">
+
+                            <tr>
+
+
+                                <th>Customer Name</th>
+                                <th>Customer DLNo</th>
+                                <th>Car Type</th>
+                                <th>License PlateNo</th>
+                                <th>Rental Type</th>
+                                <th>Start Date</th>
+                                <th>Rented For</th>
+                                <th>Return Date</th>
+                                <th>Amount Paid</th>
+
+
+                            </tr>
+
+                            {% for ret in AllRetRentals %}
+                                <tr>
+                                    <td style="display:none;">{{ ret[0] }}</td>
+                                     <td style="display:none;">{{ ret[1] }}</td>
+                                    <td>{{ ret[2] }}</td>
+                                    <td>{{ ret[3] }}</td>
+                                    <td>{{ ret[4] }}</td>
+                                    <td>{{ ret[5] }}</td>
+                                     <td>{{ret[6] }}</td>
+                                    <td>{{ ret[7] }}</td>
+                                    <td>{{ ret[8] }}</td>
+                                    <td>{{ ret[9] }}</td>
+                                     <td>{{ ret[10] }}</td>
+
+                                </tr>
+                            {% endfor %}
+
+                        </table>
+
+                    </div>
+
+                <form action="/showAllAvailRentals" method="post">
+                 <div id="AllAvailRental" style="margin-left: 270px;display:{{ allavailrentdis }} ;width:80%;">
+                     <h4 style="color: #23527c;margin-top:2px;"> Reports >> All Available Rentals</h4>
+                  <p>Start Date <input type="text" id="datepickerst" name="datepickerst" style="width: 250px;"></p>
+
+                  <p>End Date <input type="text" id="datepickerend" name="datepickerend" style="width: 250px;"></p>
+
+                                       <p> <button class="btn btn-lg btn-primary btn-block" type="submit"
+                                                style="width:10%;">Show
+                                        </button></p>
+
+                        <table id="Allavailrental" class="table table-bordered">
+
+                            <tr>
+
+
+                                <th>LicensePlate_No</th>
+                                <th>Car Type</th>
+                                <th>Model</th>
+                                <th>Year</th>
+                                <th>Daily Rate</th>
+                                <th>Weekly Rate</th>
+
+                            </tr>
+
+                            {% for ret in AllAvailRentals %}
+                                <tr>
+                                    <td>{{ ret[0] }}</td>
+                                     <td>{{ ret[1] }}</td>
+                                    <td>{{ ret[2] }}</td>
+                                    <td>{{ ret[3] }}</td>
+                                    <td>{{ ret[4] }}</td>
+                                    <td>{{ ret[5] }}</td>
+
+
+                                </tr>
+                            {% endfor %}
+
+                        </table>
+
+                    </div>
+                    </form>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            </div>
+
+    </div>
+</body>
+</html>

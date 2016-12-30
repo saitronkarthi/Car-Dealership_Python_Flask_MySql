@@ -1,0 +1,14 @@
+CREATE DEFINER=`karthik`@`%` TRIGGER `rentals`.`car_AFTER_INSERT` AFTER INSERT ON `car` FOR EACH ROW
+BEGIN
+declare vid int;
+SET @vid = (SELECT max(Vehicle_Id) from car);
+
+insert into car_availability(Vehicle_Id,Period_Id,Avail_Flag) values (@vid,1,'Y');
+insert into car_availability (Vehicle_Id,Period_Id,Avail_Flag)  values (@vid,2,'Y');
+insert into car_availability (Vehicle_Id,Period_Id,Avail_Flag)  values (@vid,3,'Y');
+insert into car_availability (Vehicle_Id,Period_Id,Avail_Flag)  values (@vid,4,'Y');
+insert into car_availability  (Vehicle_Id,Period_Id,Avail_Flag) values  (@vid,5,'Y');
+insert into car_availability  (Vehicle_Id,Period_Id,Avail_Flag) values  (@vid,6,'Y');
+
+
+END

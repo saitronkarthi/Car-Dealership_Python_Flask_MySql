@@ -1,0 +1,7 @@
+LOAD DATA LOCAL INFILE 'D:\\DB1 project\\1.initial_data_csv file\\car.csv' ignore INTO TABLE rentals.car 
+FIELDS TERMINATED BY ',' ENCLOSED BY '\'' 
+LINES TERMINATED BY '\r\n' (LicensePlate_No,Model,Year,Daily_Rate,Weekly_Rate,Car_Type);
+
+LOAD DATA LOCAL INFILE 'D:\\DB1 project\\1.initial_data_csv file\\customer.csv' ignore INTO TABLE rentals.customer 
+FIELDS TERMINATED BY ',' ENCLOSED BY '\'' 
+LINES TERMINATED BY '\r\n' (Customer_Name,Customer_DLNo,Phone);
